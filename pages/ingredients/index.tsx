@@ -1,10 +1,10 @@
 import Layout from "@/components/Layout";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { Key } from "react";
 import { query } from "../api/db";
 import styles from "./index.module.css";
+import React from "react";
 
 export interface Ingredient {
     id: number,
@@ -19,10 +19,32 @@ export interface Props {
     ingredients: Ingredient[]
 }
 
+
+export default function Ingredients({ ingredients }: Props) {
+
+    return (
+        <Layout title="Ingredients">
+            <h1 className={styles.heading}>Ingredients</h1>
+            <ul className={styles.list}>
+                {ingredients.map(ingredient => (
+                    <li className={styles.listItem} key={ingredient.id as Key}>
+                        <Link className={styles.listLink} href={`/ingredients/${ingredient.id}`}>{ingredient.name}</Link>
+                    </li>
+                ))}
+            </ul>
+            <Link className={styles.button} href="/ingredients/add">Add Ingredient</Link>
+        </Layout>
+    );
+};
+
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 
     const result = await query("SELECT * FROM ingredients");
     const ingredients = result.rows;
+
+    ingredients.sort((a:Ingredient, b: Ingredient) => {
+        return a.name > b.name ? 1 : a.name === b.name ? 0 : -1;
+    });
 
     return {
         props: {
@@ -30,24 +52,3 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
         }
     }
 }
-
-const Ingredients = ({ ingredients }: Props) => {
-
-    const router = useRouter();
-
-    return (
-        <Layout>
-            <h1>Ingredients</h1>
-            <ul>
-                {ingredients.map(ingredient => (
-                    <li key={ingredient.id as Key}>
-                        <Link href={`/ingredients/${ingredient.id}`}>{ingredient.name}</Link>
-                    </li>
-                ))}
-            </ul>
-            <input className={styles.button} type="button" value="Add Ingredient" onClick={() => router.push("/ingredients/Add")} />
-        </Layout>
-    );
-};
-
-export default Ingredients;

@@ -3,7 +3,7 @@ import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import React, { ChangeEvent, FormEvent, useState } from 'react'
 import { query } from '../api/db';
-import styles from './Add.module.css';
+import styles from './add.module.css';
 
 export interface Unit {
     id: number,
@@ -53,14 +53,14 @@ export default function Add(props: Props) {
             });
             const jsonResponse = await response.json();
             console.log(`%c${jsonResponse.message}`, "color:green");
-            router.push(`/ingredients/${jsonResponse.newIngredientId.id}`);
+            router.push(`/ingredients/${jsonResponse.newIngredient.id}`);
         } catch (error) {
             console.log({error});
         }
     };
     
     return (
-        <Layout>
+        <Layout title='Add Ingredient'>
             <h1 className={styles.heading}>New Ingredient</h1>
             <form className={styles.form} onSubmit={handleSubmit}>
                 <input className={styles.formControl} name='name' id='name' type="text" value={ingredient.name} onChange={handleChange} placeholder="Name" />

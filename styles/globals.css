@@ -2,10 +2,13 @@
     padding: 0;
     margin: 0;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-sizing: border-box;
+    color: #303030;
 }
 
 body {
     font-size: 1.2rem;
+    min-width: 300px;
 }
 
 input, select {

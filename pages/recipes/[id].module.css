@@ -1,0 +1,71 @@
+.editButton, .deleteButton{
+    width: 120px;
+	color: white;
+    border-radius: 10px;
+	padding: 5px;
+	cursor: pointer;
+    font-weight: bold;
+}
+
+.deleteButton {
+    background: red;
+	border: 2px solid red;
+}
+
+.editButton {
+    background: black;
+	border: 2px solid black;
+}
+
+.heading {
+    margin-bottom: 20px;
+}
+
+.heading2 {
+    margin-bottom: 20px;
+}
+
+.recipeInfo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: solid 1px #303030;
+    min-width: 300px;
+}
+
+.table {
+    border-collapse: collapse;
+    margin-right: 10px;
+    min-width: 262px;
+    margin: 20px 5px 20px 0;
+}
+
+.table th {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 5px;
+    border-right: 1px solid 
+}
+
+.table td {
+    padding-left: 5px;
+}
+
+.description {
+    font-style: italic;
+    min-width: 200px;
+    flex-grow: 1;
+    flex-basis: 200px;
+    margin: 20px 0;
+}
+
+.ingredients, .steps {
+    border-bottom: solid 1px #303030;
+    min-width: 300px;
+    padding: 20px 0
+}
+
+.stepListItem {
+    margin: 10px 0;
+}

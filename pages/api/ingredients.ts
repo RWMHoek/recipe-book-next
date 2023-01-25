@@ -14,8 +14,8 @@ const ingredientHandler: NextConnect<NextApiRequest, NextApiResponse> = nextConn
         const { name, unit_id, category_id } = req.body;
         try {
             const result = await query("INSERT INTO ingredients (name, unit_id, category_id) VALUES ($1, $2, $3) RETURNING id", [name, unit_id, category_id]);
-            const newIngredientId = result.rows[0];
-            res.status(201).json({newIngredientId, message: `Successfully created new ingredient with id ${newIngredientId.id}`});
+            const newIngredient = result.rows[0];
+            res.status(201).json({newIngredient, message: `Successfully created new ingredient with id ${newIngredient.id}`});
         } catch (error) {
             res.status(400).json({error});
         }

@@ -43,8 +43,8 @@ export default function IngredientPage({ ingredient }: Props) {
     }, [isDeleted]);
 
     return (
-        <Layout>
-            <h1>
+        <Layout title={`Ingredient - ${ingredient.name}`}>
+            <h1 className={styles.heading}>
                 {ingredient.name}
             </h1>
 

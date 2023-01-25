@@ -6,26 +6,35 @@ import styles from "./Layout.module.css";
 import { useRouter } from "next/router";
 
 interface LayoutComponentProps {
-    children: React.ReactNode
+    children: React.ReactNode,
+    title: string
 }
 
-const Layout = ({ children }: LayoutComponentProps) => {
+const Layout = ({ children, title }: LayoutComponentProps) => {
 
     const router = useRouter();
+
+    const links = [ "ingredients", "recipes", "shoppinglists" ];
 
     return (
         <>
             <Head>
                 <link rel="icon" href="/cookbook.ico" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <title>{`RecipeBook - ${title}`}</title>
             </Head>
 
             <nav className={styles.navBar}>
                 <Link className={styles.homeLink} href="/"><Image src="/cookbook.ico" width="50" height="50" alt="Cook book"></Image></Link>
                 <ul className={styles.navList}>
-                    <li className={styles.navListItem}>
-                        <Link className={router.pathname.match(/\/ingredients/) ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink} href="/ingredients">Ingredients</Link>
-                    </li>
+                    {links.map((link, index) => {
+                        const matchLink = new RegExp(`/${link}`);
+                        return (
+                            <li key={index} className={styles.navListItem}>
+                                <Link className={router.pathname.match(matchLink) ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink} href={`/${link}`}>{capitalize(link)}</Link>
+                            </li>
+                        )
+                    })}
                 </ul>
             </nav>
 
@@ -34,6 +43,10 @@ const Layout = ({ children }: LayoutComponentProps) => {
             
         </>
     );
+
+    function capitalize(string: string): string {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 }
 
 export default Layout;

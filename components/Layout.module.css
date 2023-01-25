@@ -1,10 +1,13 @@
 .children {
     padding: 50px;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 .navBar {
     display: flex;
     margin: 0;
+    padding-right: 50px;
     height: 100px;
     background-color: #303030;
 }
@@ -12,7 +15,7 @@
 .navList {
     display: flex;
     flex-grow: 1;
-    flex-direction: row-reverse;
+    justify-content: flex-end;
     height: 100%;
     list-style-type: none;
     width: auto;
@@ -39,7 +42,8 @@
 }
 
 .homeLink {
-    width: 70px;
+    width: 90px;
+    margin-left: 20px;
 }
 
 .homeLink > img {
@@ -59,4 +63,34 @@
 .homeLink:hover > img {
     width: 70px;
     height: 70px;
+}
+
+@media screen and (max-width: 600px) {
+    .navBar {
+        padding-right: 50px;
+        height: auto;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 350px;
+    }
+
+    .homeLink {
+        flex-grow: 1;
+    }
+
+    .navList {
+        flex-direction: column;
+        height: auto;
+        flex-grow: 0;
+    }
+
+    .navListItem {
+        height: 60px;
+        width: 100%;
+    }
+
+    .navLink {
+        align-items: flex-start;
+        width: 100%;
+    }
 }

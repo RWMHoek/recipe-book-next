@@ -14,7 +14,7 @@ interface Props {
     categories: Category[]
 };
 
-export default function Edit({ initialIngredient, units, categories }: Props) {
+export default function EditIngredient({ initialIngredient, units, categories }: Props) {
 
     const router = useRouter();
 
@@ -61,7 +61,7 @@ export default function Edit({ initialIngredient, units, categories }: Props) {
     }, [isUpdated]);
 
     return (
-        <Layout>
+        <Layout title={`Edit Ingredient - ${ingredient.name}`}>
             <h1 className={styles.heading}>Edit Ingredient</h1>
             <form className={styles.form} onSubmit={handleSubmit}>
                 <input className={styles.formControl} name='name' id='name' type="text" value={ingredient.name} onChange={handleChange} placeholder="Name" />
