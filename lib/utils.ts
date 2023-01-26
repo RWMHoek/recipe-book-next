@@ -49,3 +49,35 @@ function gcd(a: number, b: number): number {
     if (!b) return a;
     return gcd(b, a % b);
 };
+
+/**
+ * Converts the value of an HTML form element to the desired type.
+ * 
+ * How to set up the HTML element:
+ * 1. Add a 'data-type' attribute to the element
+ * 2. Set the value of the attribute to either 'string' or 'number'. The function currently only works for string and number values.
+ * 3. Pass a reference to the HTML element to this function and it will return the value of the target element with the desired type.
+ * @param target The ChangeEvent target. Can be one of the following: <input>, <textarea>, <select>. The target element must have a 'data-type' attribute set.
+ * @returns The value of the target typed as per the data-type attribute.
+ * 
+ * @example 
+ * HTML:
+ * <input type="number" data-type="number" value={value} onChange={changeHandler} />
+ * 
+ * JS:
+ * const [ value, setValue ] = useState(0);
+ * 
+ * function changeHandler(e) {
+ *     setValue(getTargetValue(e.target)); // Returns the value of the input element as a number.
+ * }
+ * 
+ */
+export function getTargetValue(target: EventTarget & (HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement)) {
+
+    switch (target.dataset.type) {
+        case 'string':
+            return target.value.toString();
+        case 'number':
+            return Number(target.value);
+    }
+};
