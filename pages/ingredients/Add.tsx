@@ -44,7 +44,7 @@ export default function Add(props: Props) {
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         try {
-            const response = await fetch("http://localhost:3001/api/ingredients", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}:${process.env.NEXT_PUBLIC_BASE_PORT}/api/ingredients`, {
                 method: "POST",
                 body: JSON.stringify(ingredient),
                 headers: {

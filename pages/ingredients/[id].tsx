@@ -19,7 +19,7 @@ export default function IngredientPage({ ingredient }: Props) {
 
     async function handleDelete() {
         try {
-            const response = await fetch("http://localhost:3001/api/ingredients", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}:${process.env.NEXT_PUBLIC_BASE_PORT}/api/ingredients`, {
                 method: "DELETE",
                 body: JSON.stringify({
                     id: ingredient.id

@@ -85,9 +85,7 @@
     margin-right: 5px;
 }
 
-.addButton, .deleteButton{
-    width: 30px;
-    height: 30px;
+.addButton, .deleteButton, .saveButton{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -95,16 +93,28 @@
     border-radius: 10px;
 	padding: 5px;
 	cursor: pointer;
-    font-size: x-large;
 }
 
 .deleteButton {
+    font-size: x-large;
+    width: 30px;
+    height: 30px;
     background: red;
 	border: 2px solid red;
 }
 
 .addButton {
+    font-size: x-large;
+    width: 30px;
+    height: 30px;
     background: green;
 	border: 2px solid green;
     font-weight: bold;
+}
+
+.saveButton {
+    width: 100px;
+    background: green;
+    border: 2px solid green;
+    margin-top: 20px;
 }

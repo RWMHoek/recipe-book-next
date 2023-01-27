@@ -1,34 +1,25 @@
 import Layout from '@/components/Layout';
+import { getTargetValue } from '@/lib/utils';
 import { GetServerSidePropsContext } from 'next';
-import React, { ChangeEvent, MouseEvent, useReducer } from 'react';
+import { useRouter } from 'next/router';
+import React, { ChangeEvent, FormEvent, MouseEvent, useReducer } from 'react';
 import { query } from '../api/db';
 import { Ingredient } from '../ingredients';
 import styles from './add.module.css';
 import reducer, { ACTION, initialState } from './recipeReducer';
 
 interface Props {
-    ingredients: Ingredient[];
+    ingredients: Ingredient[],
+    courses: {id: number, name: string}[]
 }
 
 export default function Add(props: Props) {
 
+    const router = useRouter();
+
     const [ recipe, dispatch ] = useReducer(reducer, initialState);
 
-    function getTargetValue(target: EventTarget & (HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement)) {
-        let value;
-
-        switch (target.dataset.type) {
-            case 'string':
-                value = target.value.toString();
-                break;
-            case 'number':
-                value = Number(target.value);
-                break;
-        }
-        return value;
-    }
-
-    function infoChangeHandler({ target }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    function infoChangeHandler({ target }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
         dispatch({
             type: ACTION.CHANGE_INFO,
             payload: {
@@ -101,12 +92,30 @@ export default function Add(props: Props) {
         });
     }
 
+    async function handleSubmit(e: FormEvent){
+        e.preventDefault();
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}:${process.env.NEXT_PUBLIC_BASE_PORT}/api/recipes`, {
+                method: "POST",
+                body: JSON.stringify(recipe),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const jsonResponse = await response.json();
+            console.log(`%c${jsonResponse.message}`, 'color: green');
+            
+        } catch (error) {
+            console.log({error});
+        }
+    }
+
     return (
         <Layout title={`Add Recipe`}>
 
             <h1 className={styles.heading}>Add Recipe</h1>
 
-            <form className={styles.form} action="submit">
+            <form className={styles.form} action="submit" onSubmit={handleSubmit}>
                 <input className={styles.name} type="text" name='name' id='name' value={recipe.name} onChange={infoChangeHandler} placeholder='Name' data-type='string' />
 
                 <fieldset className={styles.recipeInfo}>
@@ -116,7 +125,14 @@ export default function Add(props: Props) {
                             <tr>
                                 <th>Course</th>
                                 <td>
-                                    <input className={styles.formControl} type="text" name='course' id='course' value={recipe.course} onChange={infoChangeHandler} data-type='string' />
+                                    <select className={styles.formControl} name="course_id" id="course_id" value={recipe.course_id} onChange={infoChangeHandler} data-type="number" >
+                                        <option value="-1" disabled>Select a course</option>
+                                        {props.courses.map((course, index) => {
+                                            return (
+                                                <option key={index} value={course.id}>{course.name}</option>
+                                            )
+                                        })}
+                                    </select>
                                 </td>
                             </tr>
                             <tr>
@@ -169,7 +185,7 @@ export default function Add(props: Props) {
                     <h2 className={styles.heading2}>Steps</h2>
                     <button className={styles.addButton} onClick={addStep}>+</button>
                     <ol className={styles.stepList}>
-                        {recipe.steps.map((step, index) => {
+                        {recipe.steps.map((step: string, index: number) => {
                             return (
                                 <li key={index}>
                                     <textarea className={styles.description} name="step" value={step} onChange={changeStep} placeholder='Instruction' data-type='string' data-index={index}></textarea>
@@ -180,6 +196,7 @@ export default function Add(props: Props) {
                         })}
                     </ol>
                 </fieldset>
+                <button type='submit' className={styles.saveButton}>Save</button>
             </form>
         
         </Layout>
@@ -192,9 +209,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     result = await query("SELECT ingredients.id AS id, ingredients.name AS name, units.name AS unit FROM ingredients JOIN units ON ingredients.unit_id = units.id");
     const ingredients = result.rows.sort((a: Ingredient, b: Ingredient) => a.name > b.name ? 1 : a.name === b.name ? 0 : -1);
 
+    result = await query("SELECT * FROM courses");
+    const courses = result.rows;
+
     return {
         props: {
-            ingredients
+            ingredients,
+            courses
         }
     };
 };

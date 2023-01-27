@@ -3,7 +3,7 @@ import Layout from '@/components/Layout'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import React, { MouseEvent, useEffect, useState } from 'react'
-import { Recipe } from '.'
+import { Recipe, RecipeStep } from '.'
 import { query } from '../api/db'
 import styles from './[id].module.css'
 import { toFraction } from '@/lib/utils'
@@ -22,7 +22,7 @@ export default function RecipePage({ recipe }: Props) {
         e.preventDefault();
 
         try {
-            const response = await fetch("http://localhost:3001/api/recipes", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}:${process.env.NEXT_PUBLIC_BASE_PORT}/api/recipes`, {
                 method: "DELETE",
                 body: JSON.stringify({ id: recipe.id}),
                 headers: {
@@ -54,7 +54,7 @@ export default function RecipePage({ recipe }: Props) {
                     <tbody>
                         <tr>
                             <th>Course</th>
-                            <td>{recipe.course}</td>
+                            <td>{recipe.course_id}</td>
                         </tr>
                         <tr>
                             <th>Serves</th>
@@ -87,7 +87,7 @@ export default function RecipePage({ recipe }: Props) {
             <section className={styles.steps}>
                 <h2 className={styles.heading2}>Steps</h2>
                 <ol className={styles.stepList}>
-                    {recipe.steps?.map((step, index) => {
+                    {(recipe.steps as RecipeStep[]).map((step, index) => {
                         return (
                             <li key={index} className={styles.stepListItem}>{step.description}</li>
                         );

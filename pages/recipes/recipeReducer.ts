@@ -1,4 +1,3 @@
-import { Recipe } from ".";
 
 export enum ACTION {
     CHANGE_INFO = 'change_info',
@@ -15,9 +14,23 @@ interface Action {
     payload?: any
 }
 
-export const initialState: Recipe = {
+interface AddRecipe {
+    name: string,
+    description: string,
+    course_id: number,
+    serves: number,
+    prep_time: number,
+    cook_time: number,
+    ingredients: {
+        ingredient_id: number,
+        amount: number
+    }[],
+    steps: string[]
+}
+
+export const initialState: AddRecipe = {
     name: '',
-    course: '',
+    course_id: -1,
     serves: 0,
     prep_time: 0,
     cook_time: 0,
@@ -26,7 +39,7 @@ export const initialState: Recipe = {
     steps: []
 }
 
-export default function reducer(state: Recipe, action: Action) {
+export default function reducer(state: AddRecipe, action: Action) {
     
     switch (action.type) {
         case ACTION.CHANGE_INFO:
@@ -68,7 +81,7 @@ export default function reducer(state: Recipe, action: Action) {
         case ACTION.DELETE_STEP:
             return {
                 ...state,
-                steps: state.steps.filter((step, index) => index !== action.payload.index)
+                steps: state.steps.filter((step: string, index: number) => index !== action.payload.index)
             };
         default:
             return initialState;

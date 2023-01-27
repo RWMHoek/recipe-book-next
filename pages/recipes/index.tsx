@@ -13,6 +13,8 @@ export interface RecipeIngredient {
 }
 
 export interface RecipeStep {
+    id?: number,
+    recipe_id?: number,
     step_number: number,
     description: string
 }
@@ -21,12 +23,12 @@ export interface Recipe {
     id?: number,
     name: string,
     description: string,
-    course: string,
+    course_id: number,
     serves: number,
     prep_time: number,
     cook_time: number,
     ingredients: RecipeIngredient[],
-    steps: RecipeStep[]
+    steps: RecipeStep[] | string[]
 };
 
 interface Props {
