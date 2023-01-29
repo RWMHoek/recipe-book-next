@@ -14,6 +14,8 @@ interface Props {
 
 export default function RecipePage({ recipe }: Props) {
 
+    console.log(JSON.stringify(recipe));
+
     const router = useRouter();
 
     const [ isDeleted, setIsDeleted ] = useState(false);

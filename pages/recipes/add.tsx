@@ -104,9 +104,11 @@ export default function Add(props: Props) {
             });
             const jsonResponse = await response.json();
             console.log(`%c${jsonResponse.message}`, 'color: green');
-            
-        } catch (error) {
-            console.log({error});
+            router.push(`/recipes/${jsonResponse.newRecipe.id}`);
+        } catch(error) {
+            if (error instanceof Error) {
+                console.log(`%c${error.message}`, "color: red");
+            }
         }
     }
 

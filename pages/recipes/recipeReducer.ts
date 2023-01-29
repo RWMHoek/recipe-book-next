@@ -14,7 +14,8 @@ interface Action {
     payload?: any
 }
 
-interface AddRecipe {
+export interface AddRecipe {
+    id?: number,
     name: string,
     description: string,
     course_id: number,

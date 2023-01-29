@@ -1,0 +1,120 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 305px;
+}
+
+.formControl, .description, .ingredientFormControl {
+    padding: 5px;
+    margin: 5px 0;
+    outline: none;
+    border: 2px solid black;
+    border-radius: 10px;
+    font: inherit;
+}
+
+.formControl {
+    width: 130px;
+}
+
+.ingredientFormControl {
+    margin: 5px;
+}
+
+.name {
+    padding: 5px;
+    margin: 5px 0;
+    outline: none;
+    border: 2px solid black;
+    border-radius: 10px;
+    font: inherit;
+    font-size: xx-large;
+    margin-right: 5px;
+}
+
+.heading {
+    margin-bottom: 40px;
+}
+
+.heading2 {
+    margin-bottom: 20px;
+}
+
+.recipeInfo, .ingredients, .steps {
+    border: none;
+    border-bottom: solid 1px #303030;
+    padding: 20px 0
+}
+
+.recipeInfo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.table {
+    border-collapse: collapse;
+    margin-right: 10px;
+    margin: 0 5px 0 0;
+}
+
+.table tr {
+    align-items: center;
+}
+
+.table th {
+    display: flex;
+    height: 50px;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 5px;
+}
+
+.table td {
+    padding-left: 5px;
+}
+
+.description {
+    font-style: italic;
+    flex-grow: 1;
+    flex-basis: 200px;
+    min-height: 150px;
+    min-width: 300px;
+    margin-right: 5px;
+}
+
+.addButton, .deleteButton, .saveButton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	color: white;
+    border-radius: 10px;
+	padding: 5px;
+	cursor: pointer;
+}
+
+.deleteButton {
+    font-size: x-large;
+    width: 30px;
+    height: 30px;
+    background: red;
+	border: 2px solid red;
+}
+
+.addButton {
+    font-size: x-large;
+    width: 30px;
+    height: 30px;
+    background: green;
+	border: 2px solid green;
+    font-weight: bold;
+}
+
+.saveButton {
+    width: 100px;
+    background: green;
+    border: 2px solid green;
+    margin-top: 20px;
+}
