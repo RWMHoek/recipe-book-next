@@ -3,18 +3,16 @@ import Layout from '@/components/Layout'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import React, { MouseEvent, useEffect, useState } from 'react'
-import { Recipe, RecipeStep } from '.'
 import { query } from '../api/db'
 import styles from './[id].module.css'
-import { toFraction } from '@/lib/utils'
+import { capitalize, toFraction } from '@/lib/utils'
+import { Recipe, RecipeIngredient, Step } from '@/lib/types'
 
 interface Props {
     recipe: Recipe
 }
 
 export default function RecipePage({ recipe }: Props) {
-
-    console.log(JSON.stringify(recipe));
 
     const router = useRouter();
 
@@ -56,7 +54,7 @@ export default function RecipePage({ recipe }: Props) {
                     <tbody>
                         <tr>
                             <th>Course</th>
-                            <td>{recipe.course_id}</td>
+                            <td>{capitalize(recipe.course!)}</td>
                         </tr>
                         <tr>
                             <th>Serves</th>
@@ -78,7 +76,7 @@ export default function RecipePage({ recipe }: Props) {
             <section className={styles.ingredients}>
                 <h2 className={styles.heading2}>Ingredients</h2>
                 <ul className={styles.ingredientList}>
-                    {recipe.ingredients?.map((ingredient, index) => {
+                    {recipe.ingredients.map((ingredient, index) => {
                         return (
                             <li key={index} className={styles.ingredientListItem}>{`${toFraction(ingredient.amount)} ${ingredient.unit} - ${ingredient.name}`}</li>
                         );
@@ -89,9 +87,9 @@ export default function RecipePage({ recipe }: Props) {
             <section className={styles.steps}>
                 <h2 className={styles.heading2}>Steps</h2>
                 <ol className={styles.stepList}>
-                    {(recipe.steps as RecipeStep[]).map((step, index) => {
+                    {recipe.steps.map((step, index) => {
                         return (
-                            <li key={index} className={styles.stepListItem}>{step.description}</li>
+                            <li key={index} className={styles.stepListItem}>{step}</li>
                         );
                     })}
                 </ol>
@@ -107,14 +105,17 @@ export default function RecipePage({ recipe }: Props) {
 export async function getServerSideProps({ params }: GetServerSidePropsContext) {
     let result;
 
-    result = await query("SELECT * FROM recipes WHERE id = $1", [params?.id]);
-    const recipe = result.rows[0];
+    result = await query("SELECT recipes.id, recipes.name, recipes.description, courses.name AS course, recipes.serves, recipes.prep_time, recipes.cook_time FROM recipes JOIN courses ON recipes.course_id = courses.id WHERE recipes.id = $1", [params?.id]);
+    const recipe: Recipe = result.rows[0];
 
     result = await query("SELECT ingredients.name AS name, units.name AS unit, recipes_ingredients.amount AS amount FROM recipes_ingredients JOIN ingredients ON recipes_ingredients.ingredient_id = ingredients.id JOIN units ON ingredients.unit_id = units.id WHERE recipes_ingredients.recipe_id = $1", [params?.id]);
-    recipe.ingredients = result.rows.sort((a: {name: string}, b: {name: string}) => a.name > b.name ? 1 : a.name === b.name ? 0 : -1);
+    const ingredients: RecipeIngredient[] = result.rows;
+    recipe.ingredients = ingredients.sort((a, b) => a.name! > b.name! ? 1 : a.name === b.name ? 0 : -1);
 
     result = await query("SELECT id, step_number, description FROM steps WHERE recipe_id = $1", [params?.id]);
-    recipe.steps = result.rows.sort((a: {step_number: number}, b: {step_number: number}) => a.step_number > b.step_number ? 1 : a.step_number === b.step_number ? 0 : -1);
+    const steps: Step[] = result.rows;
+    steps.sort((a, b) => a.step_number > b.step_number ? 1 : a.step_number === b.step_number ? 0 : -1);
+    recipe.steps = steps.map(step => step.description);
 
     return {
         props: {

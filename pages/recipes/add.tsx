@@ -1,16 +1,16 @@
 import Layout from '@/components/Layout';
+import { Course, Ingredient } from '@/lib/types';
 import { getTargetValue } from '@/lib/utils';
 import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import React, { ChangeEvent, FormEvent, MouseEvent, useReducer } from 'react';
 import { query } from '../api/db';
-import { Ingredient } from '../ingredients';
 import styles from './add.module.css';
 import reducer, { ACTION, initialState } from './recipeReducer';
 
 interface Props {
     ingredients: Ingredient[],
-    courses: {id: number, name: string}[]
+    courses: Course[]
 }
 
 export default function Add(props: Props) {
@@ -165,7 +165,7 @@ export default function Add(props: Props) {
                         {recipe.ingredients.map((recipeIngredient, index) => {
                             return (
                                 <li key={index}>
-                                    <select className={styles.ingredientFormControl} name="ingredient_id" value={recipeIngredient.ingredient_id} onChange={ingredientChangeHandler} data-type='number' data-index={index}>
+                                    <select className={styles.ingredientFormControl} name="id" value={recipeIngredient.id} onChange={ingredientChangeHandler} data-type='number' data-index={index}>
                                         <option value={-1} disabled>Select Ingredient</option>
                                         {props.ingredients.map((ingredient, i) => {
                                             return (
@@ -174,7 +174,7 @@ export default function Add(props: Props) {
                                         })}
                                     </select>
                                     <input className={styles.ingredientFormControl} type="number" name='amount' value={recipeIngredient.amount} onChange={ingredientChangeHandler} data-type='number' data-index={index} />
-                                    <span key={index}>{props.ingredients.map(ingredient => ingredient.id === recipeIngredient.ingredient_id && ingredient.unit)}</span>
+                                    <span key={index}>{props.ingredients.map(ingredient => ingredient.id === recipeIngredient.id && ingredient.unit)}</span>
                                     <button className={styles.deleteButton} onClick={deleteIngredient} data-index={index} >x</button>
                                 </li>
                             )
@@ -208,11 +208,12 @@ export default function Add(props: Props) {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     let result;
 
-    result = await query("SELECT ingredients.id AS id, ingredients.name AS name, units.name AS unit FROM ingredients JOIN units ON ingredients.unit_id = units.id");
-    const ingredients = result.rows.sort((a: Ingredient, b: Ingredient) => a.name > b.name ? 1 : a.name === b.name ? 0 : -1);
+    result = await query("SELECT ingredients.id, ingredients.name, units.name AS unit FROM ingredients JOIN units ON ingredients.unit_id = units.id");
+    const ingredients: Ingredient[] = result.rows;
+    ingredients.sort((a, b) => a.name > b.name ? 1 : a.name === b.name ? 0 : -1);
 
     result = await query("SELECT * FROM courses");
-    const courses = result.rows;
+    const courses: Course[] = result.rows;
 
     return {
         props: {

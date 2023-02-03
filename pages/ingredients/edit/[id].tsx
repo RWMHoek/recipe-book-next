@@ -4,9 +4,9 @@ import { useRouter } from 'next/router';
 import { query } from '@/pages/api/db';
 import { GetServerSidePropsContext } from 'next';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react'
-import { Ingredient } from '..';
-import { Category, Unit } from '../Add';
 import styles from "./[id].module.css";
+import { getTargetValue } from '@/lib/utils';
+import { Category, Ingredient, Unit } from '@/lib/types';
 
 interface Props {
     initialIngredient: Ingredient,
@@ -26,12 +26,9 @@ export default function EditIngredient({ initialIngredient, units, categories }:
 
     function handleChange({ target }: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) {
         setIngredient(prevIngredient => {
-            return target.name === 'name' ? {
+            return {
                 ...prevIngredient,
-                [target.name]: target.value,
-            } : {
-                ...prevIngredient,
-                [target.name]: parseInt(target.value)
+                [target.name]: getTargetValue(target),
             }
         });
     }
@@ -64,16 +61,16 @@ export default function EditIngredient({ initialIngredient, units, categories }:
         <Layout title={`Edit Ingredient - ${ingredient.name}`}>
             <h1 className={styles.heading}>Edit Ingredient</h1>
             <form className={styles.form} onSubmit={handleSubmit}>
-                <input className={styles.formControl} name='name' id='name' type="text" value={ingredient.name} onChange={handleChange} placeholder="Name" />
+                <input className={styles.formControl} name='name' id='name' type="text" value={ingredient.name} onChange={handleChange} placeholder="Name" data-type='string' />
 
-                <select className={styles.formControl} name="unit_id" id="unit_id" onChange={handleChange} value={ingredient.unit_id}>
+                <select className={styles.formControl} name="unit_id" id="unit_id" onChange={handleChange} value={ingredient.unit_id} data-type='number'>
                     <option value="0" disabled>Select a unit</option>
                     {units.map(unit => {
                         return <option value={unit.id} key={unit.id}>{unit.name} ({unit.abbreviation})</option>
                     })}
                 </select>
 
-                <select className={styles.formControl} name="category_id" id="category_id" onChange={handleChange} value={ingredient.category_id}>
+                <select className={styles.formControl} name="category_id" id="category_id" onChange={handleChange} value={ingredient.category_id} data-type='number'>
                     <option value="0" disabled>Select a category</option>
                     {categories.map(category => {
                         return <option value={category.id} key={category.id}>{category.name}</option>
@@ -88,13 +85,13 @@ export default function EditIngredient({ initialIngredient, units, categories }:
 
 export async function getServerSideProps({ params }: GetServerSidePropsContext) {
     let result = await query("SELECT * FROM ingredients WHERE id = $1", [params?.id]);
-    const initialIngredient = result.rows[0];
+    const initialIngredient: Ingredient = result.rows[0];
 
     result = await query("SELECT * FROM units");
-    const units = result.rows;
+    const units: Unit[] = result.rows;
 
     result = await query("SELECT * FROM categories");
-    const categories = result.rows;
+    const categories: Category[] = result.rows;
 
     return {
         props: {

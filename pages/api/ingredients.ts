@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { query } from "./db";
 import nextConnect, { NextConnect } from "next-connect";
 
+
 const ingredientHandler: NextConnect<NextApiRequest, NextApiResponse> = nextConnect({
     onError: (err, req, res, next) => {
         res.status(500).json({err});

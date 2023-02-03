@@ -101,6 +101,7 @@
     height: 30px;
     background: red;
 	border: 2px solid red;
+    display: inline-block;
 }
 
 .addButton {

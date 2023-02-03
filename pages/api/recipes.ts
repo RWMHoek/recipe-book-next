@@ -1,7 +1,7 @@
 import nextConnect, { NextConnect } from "next-connect";
 import { query } from "./db";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Recipe, RecipeIngredient } from "../recipes";
+import { Recipe, RecipeIngredient } from "@/lib/types";
 
 type QueryParameter = string | number;
 
@@ -17,7 +17,7 @@ const recipeHandler: NextConnect<NextApiRequest, NextApiResponse> = nextConnect(
         // Extract all information from the request body
         const { name, description, course_id, serves, prep_time, cook_time, ingredients } = req.body as Recipe;
         const steps: string[] = req.body.steps;
-        console.log(req.body);
+        let queryArgs;
 
         try {
 
@@ -26,12 +26,16 @@ const recipeHandler: NextConnect<NextApiRequest, NextApiResponse> = nextConnect(
             const newRecipe: { id: number} = result.rows[0];
 
             // Insert Recipe Ingredients
-            let queryArgs = getInsertIngredientQuery(newRecipe.id, ingredients);
-            await query(queryArgs.queryString, queryArgs.parameters);
+            if (ingredients.length) {
+                queryArgs = getInsertIngredientQuery(newRecipe.id, ingredients);
+                await query(queryArgs.queryString, queryArgs.parameters);
+            }
 
             // Insert Recipe Steps
-            queryArgs = getInsertStepsQuery(newRecipe.id, steps);
-            await query(queryArgs.queryString, queryArgs.parameters);
+            if (steps.length) {
+                queryArgs = getInsertStepsQuery(newRecipe.id, steps);
+                await query(queryArgs.queryString, queryArgs.parameters);
+            }
             
             // Send the response
             res.status(201).json({newRecipe, message: `Successfully created new recipe with id ${newRecipe.id}`});
@@ -92,12 +96,12 @@ function getInsertIngredientQuery(recipeId: number, ingredients: RecipeIngredien
 
     // Loop over recipe ingredients
     ingredients.forEach((ingredient: RecipeIngredient, index: number) => {
-        const { ingredient_id, amount } = ingredient;
+        const { id, amount } = ingredient;
 
         // Set up parameter array
         parameters = [
             ...parameters,
-            ingredient_id as number,
+            id as number,
             recipeId,
             amount
         ];

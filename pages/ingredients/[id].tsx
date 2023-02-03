@@ -2,16 +2,12 @@
 import { GetServerSidePropsContext } from 'next';
 import React, { useEffect, useState } from 'react'
 import { query } from '../api/db'
-import { Ingredient } from '.';
 import Layout from '@/components/Layout';
 import styles from './[id].module.css';
 import { useRouter } from 'next/router';
+import { Ingredient } from '@/lib/types';
 
-export interface Props {
-    ingredient: Ingredient
-};
-
-export default function IngredientPage({ ingredient }: Props) {
+export default function IngredientPage({ ingredient }: { ingredient: Ingredient }) {
 
     const router = useRouter();
 
@@ -61,7 +57,7 @@ export default function IngredientPage({ ingredient }: Props) {
 
 export async function getServerSideProps({ params }: GetServerSidePropsContext) {
     const result = await query("SELECT ingredients.id AS id, ingredients.name AS name, units.name AS unit, categories.name AS category FROM ingredients JOIN units ON ingredients.unit_id = units.id JOIN categories ON ingredients.category_id = categories.id WHERE ingredients.id = $1", [params?.id]);
-    const ingredient = result.rows[0];
+    const ingredient: Ingredient = result.rows[0];
 
     if (!ingredient) return;
 

@@ -4,32 +4,7 @@ import React, { Key } from 'react'
 import { query } from '../api/db'
 import styles from './index.module.css';
 import Link from 'next/link';
-
-export interface RecipeIngredient {
-    ingredient_id?: number,
-    name?: string,
-    unit?: string,
-    amount: number
-}
-
-export interface RecipeStep {
-    id?: number,
-    recipe_id?: number,
-    step_number: number,
-    description: string
-}
-
-export interface Recipe {
-    id?: number,
-    name: string,
-    description: string,
-    course_id: number,
-    serves: number,
-    prep_time: number,
-    cook_time: number,
-    ingredients: RecipeIngredient[],
-    steps: RecipeStep[] | string[]
-};
+import { Recipe } from '@/lib/types';
 
 interface Props {
     recipes: Recipe[]
@@ -55,13 +30,11 @@ export default function Recipes({ recipes }: Props) {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
     const result = await query("SELECT * FROM recipes");
-    const recipes = result.rows;
+    const recipes: Recipe[] = result.rows;
 
-    recipes.sort((a:Recipe, b: Recipe) => {
+    recipes.sort((a, b) => {
         return a.name > b.name ? 1 : a.name === b.name ? 0 : -1;
     });
-
-    console.log(recipes);
 
     return {
         props: {

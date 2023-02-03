@@ -1,18 +1,18 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Layout from '@/components/Layout'
 import { query } from '@/pages/api/db'
 import { GetServerSidePropsContext } from 'next'
 import React, { ChangeEvent, FormEvent, MouseEvent, useEffect, useReducer, useState } from 'react'
-import { RecipeStep } from '..'
 import styles from "./[id].module.css";
-import reducer, { AddRecipe, ACTION } from '../recipeReducer'
+import reducer, { ACTION } from '../recipeReducer'
 import { getTargetValue } from '@/lib/utils';
-import { Ingredient } from '@/pages/ingredients'
 import { useRouter } from 'next/router'
+import { Course, Ingredient, Recipe, RecipeIngredient, Step } from '@/lib/types';
 
 interface Props {
-    recipe: AddRecipe,
+    recipe: Recipe,
     ingredients: Ingredient[],
-    courses: {id: number, name: string}[]
+    courses: Course[]
 }
 
 export default function EditRecipe(props: Props) {
@@ -65,7 +65,6 @@ export default function EditRecipe(props: Props) {
     function addStep(e: MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
         const target = e.target as HTMLButtonElement;
-        console.log(target.dataset.index);
         dispatch({
             type: ACTION.ADD_STEP,
             payload: {
@@ -175,7 +174,7 @@ export default function EditRecipe(props: Props) {
                         {recipe.ingredients.map((recipeIngredient, index) => {
                             return (
                                 <li key={index}>
-                                    <select className={styles.ingredientFormControl} name="ingredient_id" value={recipeIngredient.ingredient_id} onChange={ingredientChangeHandler} data-type='number' data-index={index}>
+                                    <select className={styles.ingredientFormControl} name="id" value={recipeIngredient.id} onChange={ingredientChangeHandler} data-type='number' data-index={index}>
                                         <option value={-1} disabled>Select Ingredient</option>
                                         {props.ingredients.map((ingredient, i) => {
                                             return (
@@ -184,7 +183,9 @@ export default function EditRecipe(props: Props) {
                                         })}
                                     </select>
                                     <input className={styles.ingredientFormControl} type="number" name='amount' value={recipeIngredient.amount} onChange={ingredientChangeHandler} data-type='number' data-index={index} />
-                                    <span key={index}>{props.ingredients.map(ingredient => ingredient.id === recipeIngredient.ingredient_id && ingredient.unit)}</span>
+                                    <span key={index}>
+                                        {props.ingredients.map(ingredient => ingredient.id === recipeIngredient.id && ingredient.unit)}
+                                    </span>
                                     <button className={styles.deleteButton} onClick={deleteIngredient} data-index={index} >x</button>
                                 </li>
                             )
@@ -197,7 +198,7 @@ export default function EditRecipe(props: Props) {
                     <h2 className={styles.heading2}>Steps</h2>
                     <button className={styles.addButton} onClick={addStep}>+</button>
                     <ol className={styles.stepList}>
-                        {recipe.steps.map((step: string, index: number) => {
+                        {recipe.steps.map((step, index) => {
                             return (
                                 <li key={index}>
                                     <textarea className={styles.description} name="step" value={step} onChange={changeStep} placeholder='Instruction' data-type='string' data-index={index}></textarea>
@@ -218,20 +219,22 @@ export default function EditRecipe(props: Props) {
 export async function getServerSideProps({params}: GetServerSidePropsContext) {
 
     let result = await query("SELECT * FROM recipes WHERE id = $1", [params?.id]);
-    const recipe = result.rows[0];
+    const recipe: Recipe = result.rows[0];
 
-    result = await query("SELECT * FROM recipes_ingredients WHERE recipe_id = $1", [params?.id]);
-    recipe.ingredients = result.rows;
+    result = await query("SELECT ingredient_id AS id, amount FROM recipes_ingredients WHERE recipe_id = $1", [params?.id]);
+    const recipeIngredients: RecipeIngredient[] = result.rows;
+    recipe.ingredients = recipeIngredients.sort((a, b) => a.name! > b.name! ? 1 : a.name === b.name ? 0 : -1);
 
     result = await query("SELECT * FROM steps WHERE recipe_id = $1", [params?.id]);
-    const steps = result.rows.sort((a: RecipeStep, b: RecipeStep) => a.step_number > b.step_number ? 1 : a.step_number === b.step_number ? 0 : -1).map((step: RecipeStep) => step.description);
-    recipe.steps = steps;
+    const steps: Step[] = result.rows;
+    steps.sort((a, b) => a.step_number > b.step_number ? 1 : a.step_number === b.step_number ? 0 : -1);
+    recipe.steps = steps.map((step) => step.description);
 
     result = await query("SELECT * FROM courses");
-    const courses = result.rows;
+    const courses: Course[] = result.rows;
 
-    result = await query("SELECT * FROM ingredients");
-    const ingredients = result.rows;
+    result = await query("SELECT ingredients.id, ingredients.name, units.name AS unit FROM ingredients JOIN units ON ingredients.unit_id = units.id");
+    const ingredients: Ingredient[] = result.rows;
 
     return {
         props: {

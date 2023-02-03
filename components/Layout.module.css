@@ -94,3 +94,10 @@
         width: 100%;
     }
 }
+
+@media print {
+    .navBar{
+        height: 0;
+        overflow: hidden;
+    }
+}

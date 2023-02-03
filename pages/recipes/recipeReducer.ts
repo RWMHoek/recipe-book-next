@@ -1,3 +1,4 @@
+import { Action, Recipe } from "@/lib/types";
 
 export enum ACTION {
     CHANGE_INFO = 'change_info',
@@ -9,27 +10,7 @@ export enum ACTION {
     DELETE_STEP = 'delete_step'
 }
 
-interface Action {
-    type: string,
-    payload?: any
-}
-
-export interface AddRecipe {
-    id?: number,
-    name: string,
-    description: string,
-    course_id: number,
-    serves: number,
-    prep_time: number,
-    cook_time: number,
-    ingredients: {
-        ingredient_id: number,
-        amount: number
-    }[],
-    steps: string[]
-}
-
-export const initialState: AddRecipe = {
+export const initialState: Recipe = {
     name: '',
     course_id: -1,
     serves: 0,
@@ -40,7 +21,7 @@ export const initialState: AddRecipe = {
     steps: []
 }
 
-export default function reducer(state: AddRecipe, action: Action) {
+export default function reducer(state: Recipe, action: Action): Recipe {
     
     switch (action.type) {
         case ACTION.CHANGE_INFO:
@@ -51,7 +32,7 @@ export default function reducer(state: AddRecipe, action: Action) {
         case ACTION.ADD_INGREDIENT:
             return {
                 ...state,
-                ingredients: [ ...state.ingredients, { ingredient_id: -1, amount: 0 } ]
+                ingredients: [ ...state.ingredients, { id: -1, amount: 0 } ]
             };
         case ACTION.CHANGE_INGREDIENT:
             return {
@@ -82,7 +63,7 @@ export default function reducer(state: AddRecipe, action: Action) {
         case ACTION.DELETE_STEP:
             return {
                 ...state,
-                steps: state.steps.filter((step: string, index: number) => index !== action.payload.index)
+                steps: state.steps.filter((step, index) => index !== action.payload.index)
             };
         default:
             return initialState;

@@ -81,3 +81,7 @@ export function getTargetValue(target: EventTarget & (HTMLInputElement | HTMLTex
             return Number(target.value);
     }
 };
+
+export function capitalize(string: string): string {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};

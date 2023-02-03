@@ -1,21 +1,10 @@
 import Layout from '@/components/Layout';
+import { Category, Unit } from '@/lib/types';
 import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import React, { ChangeEvent, FormEvent, useState } from 'react'
 import { query } from '../api/db';
 import styles from './add.module.css';
-
-export interface Unit {
-    id: number,
-    name: string,
-    abbreviation: string
-}
-
-export interface Category {
-    id: number,
-    name: string,
-    description: string
-}
 
 interface Props {
     units: Unit[],
@@ -87,9 +76,9 @@ export default function Add(props: Props) {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     let result = await query("SELECT * FROM units");
-    const units = result.rows;
+    const units: Unit[] = result.rows;
     result = await query("SELECT * FROM categories");
-    const categories = result.rows;
+    const categories: Category[] = result.rows;
 
     return {
         props: {
