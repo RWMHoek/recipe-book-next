@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { query } from '@/pages/api/db';
 import { GetServerSidePropsContext } from 'next';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react'
-import styles from "./[id].module.css";
+import styles from "@/styles/ingredients/edit.module.css";
 import { getTargetValue } from '@/lib/utils';
 import { Category, Ingredient, Unit } from '@/lib/types';
 

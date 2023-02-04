@@ -3,18 +3,26 @@ import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { ChangeEvent, Key, useState } from "react";
 import { query } from "../api/db";
-import styles from "./index.module.css";
+import styles from "@/styles/ingredients/index.module.css";
 import React from "react";
-import { Ingredient } from "@/lib/types";
+import { Category, Ingredient, Unit } from "@/lib/types";
+import Modal from "@/components/Modal";
+import IngredientForm from "@/components/IngredientForm";
+import { useRouter } from "next/router";
 
 interface Props {
-    ingredients: Ingredient[]
+    ingredients: Ingredient[],
+    units: Unit[],
+    categories: Category[]
 }
 
 
-export default function Ingredients({ ingredients }: Props) {
+export default function Ingredients({ ingredients, units, categories }: Props) {
 
     const [ searchTerm, setSearchTerm ] = useState('');
+    const [ isOpen, setIsOpen ] = useState(false);
+
+    const router = useRouter();
 
     const filteredIngredients = ingredients.filter(ingredient => ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()));
     
@@ -22,11 +30,29 @@ export default function Ingredients({ ingredients }: Props) {
         setSearchTerm(target.value);
     }
 
+    async function handleSubmit(ingredient: Ingredient) {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}:${process.env.NEXT_PUBLIC_BASE_PORT}/api/ingredients`, {
+                method: "POST",
+                body: JSON.stringify(ingredient),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const jsonResponse = await response.json();
+            console.log(`%c${jsonResponse.message}`, "color:green");
+            setIsOpen(false);
+            router.reload();
+        } catch (error) {
+            console.log({error});
+        }
+    };
+
     return (
         <Layout title="Ingredients">
             <h1 className={styles.heading}>Ingredients</h1>
             <input className={styles.formControl} type="text" name="searchTerm" value={searchTerm} onChange={handleChange} placeholder="Search" />
-            <Link className={styles.button} href="/ingredients/add">Add Ingredient</Link>
+            <button className={styles.button} onClick={() => setIsOpen(true)}>Add Ingredient</button>
             <ul className={styles.list}>
                 {filteredIngredients.map(ingredient => (
                     <li className={styles.listItem} key={ingredient.id as Key}>
@@ -34,13 +60,21 @@ export default function Ingredients({ ingredients }: Props) {
                     </li>
                 ))}
             </ul>
+            <Modal open={isOpen} setOpen={setIsOpen}>
+                <IngredientForm units={units} categories={categories} onSubmit={handleSubmit} />
+            </Modal>
         </Layout>
     );
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 
-    const result = await query("SELECT * FROM ingredients");
+    let result = await query("SELECT * FROM units");
+    const units: Unit[] = result.rows;
+    result = await query("SELECT * FROM categories");
+    const categories: Category[] = result.rows;
+
+    result = await query("SELECT * FROM ingredients");
     const ingredients: Ingredient[] = result.rows;
 
     ingredients.sort((a, b) => {
@@ -49,7 +83,9 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
     return {
         props: {
-            ingredients
+            ingredients,
+            units,
+            categories
         }
     }
 }

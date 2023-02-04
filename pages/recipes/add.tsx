@@ -5,7 +5,7 @@ import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import React, { ChangeEvent, FormEvent, MouseEvent, useReducer } from 'react';
 import { query } from '../api/db';
-import styles from './add.module.css';
+import styles from '@/styles/recipes/add.module.css';
 import reducer, { ACTION, initialState } from './recipeReducer';
 
 interface Props {

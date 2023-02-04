@@ -3,7 +3,7 @@ import Layout from '@/components/Layout'
 import { query } from '@/pages/api/db'
 import { GetServerSidePropsContext } from 'next'
 import React, { ChangeEvent, FormEvent, MouseEvent, useEffect, useReducer, useState } from 'react'
-import styles from "./[id].module.css";
+import styles from "@/styles/recipes/edit.module.css";
 import reducer, { ACTION } from '../recipeReducer'
 import { getTargetValue } from '@/lib/utils';
 import { useRouter } from 'next/router'

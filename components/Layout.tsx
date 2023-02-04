@@ -2,8 +2,9 @@ import Image from "next/image";
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
-import styles from "./Layout.module.css";
+import styles from "@/styles/Layout.module.css";
 import { useRouter } from "next/router";
+import { capitalize } from "@/lib/utils";
 
 interface LayoutComponentProps {
     children: React.ReactNode,
@@ -40,13 +41,8 @@ const Layout = ({ children, title }: LayoutComponentProps) => {
 
             <main className={styles.children}>{children}</main>
 
-            
         </>
     );
-
-    function capitalize(string: string): string {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
 }
 
 export default Layout;

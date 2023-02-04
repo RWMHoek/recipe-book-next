@@ -82,6 +82,15 @@ export function getTargetValue(target: EventTarget & (HTMLInputElement | HTMLTex
     }
 };
 
+/**
+ * Capitalizes the first letter in a given string.
+ * @param string The string to be capitalized.
+ * @returns The input string with the first character capitalized.
+ * @example
+ * capitalize("hello world");
+ * // returns:
+ * "Hello world"
+ */
 export function capitalize(string: string): string {
     return string.charAt(0).toUpperCase() + string.slice(1);
 };

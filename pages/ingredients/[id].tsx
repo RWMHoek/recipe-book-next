@@ -3,7 +3,7 @@ import { GetServerSidePropsContext } from 'next';
 import React, { useEffect, useState } from 'react'
 import { query } from '../api/db'
 import Layout from '@/components/Layout';
-import styles from './[id].module.css';
+import styles from '@/styles/ingredients/ingredient.module.css';
 import { useRouter } from 'next/router';
 import { Ingredient } from '@/lib/types';
 

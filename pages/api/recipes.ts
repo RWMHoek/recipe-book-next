@@ -85,6 +85,19 @@ const recipeHandler: NextConnect<NextApiRequest, NextApiResponse> = nextConnect(
 
 export default recipeHandler;
 
+/**
+ * Create an insert query string for all recipe ingredients.
+ * @param recipeId The recipe ID. Must be an integer.
+ * @param ingredients The ingredients to add. Must be an array of objects with an id and amount property.
+ * @returns An object with the properties 'queryString' (containing the postgres query string to insert all recipe ingredients) and 'parameters' (containing an array of all parameter values).
+ * @example
+ * getInsertIngredientQuery(1, [{id: 1, amount: 5}, {id: 2, amount: 3}]);
+ * // returns:
+ *  {
+ *      queryString: "INSERT INTO recipes_ingredients (ingredient_id, recipe_id, amount) VALUES ($1, $2, $3), ($4, $5, $6)",
+ *      parameters: [1, 1, 5, 2, 1, 3]
+ *  }
+ */
 function getInsertIngredientQuery(recipeId: number, ingredients: RecipeIngredient[]) {
     // Create variables used to create querystrings
     let queryString: string, queryValues: string[], parameters: QueryParameter[];
@@ -98,7 +111,7 @@ function getInsertIngredientQuery(recipeId: number, ingredients: RecipeIngredien
     ingredients.forEach((ingredient: RecipeIngredient, index: number) => {
         const { id, amount } = ingredient;
 
-        // Set up parameter array
+        // Add parameters to array
         parameters = [
             ...parameters,
             id as number,
@@ -118,6 +131,19 @@ function getInsertIngredientQuery(recipeId: number, ingredients: RecipeIngredien
     };
 }
 
+/**
+ * Create an insert query string for all recipe steps.
+ * @param recipeId The recipe ID. Must be an integer.
+ * @param steps The steps to add. Must be an array of strings.
+ * @returns An object with the properties 'queryString' (containing the postgres query string to insert all steps) and 'parameters' (containing an array of all parameter values).
+ * @example
+ * getInsertStepsQuery(1, ["Boil pasta", "Cook sauce", "Combine"]);
+ * // returns:
+ *  {
+ *      queryString: "INSERT INTO steps (recipe_id, step_number, description) VALUES ($1, $2, $3), ($4, $5, $6), ($7, $8, $9)",
+ *      parameters: [1, 1, 'Boil pasta', 1, 2, 'Cook sauce', 1, 3, 'Combine']
+ *  }
+ */
 function getInsertStepsQuery(recipeId: number, steps: string[]) {
     // Create variables used to create querystrings
     let queryString: string, queryValues: string[], parameters: QueryParameter[];
@@ -130,7 +156,7 @@ function getInsertStepsQuery(recipeId: number, steps: string[]) {
     // Loop over recipe steps
     steps.forEach((step: string, index: number) => {
 
-        // Set up parameter array
+        // Add parameters to array
         parameters = [
             ...parameters,
             recipeId,

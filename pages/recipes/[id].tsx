@@ -4,7 +4,7 @@ import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import React, { MouseEvent, useEffect, useState } from 'react'
 import { query } from '../api/db'
-import styles from './[id].module.css'
+import styles from '@/styles/recipes/recipe.module.css'
 import { capitalize, toFraction } from '@/lib/utils'
 import { Recipe, RecipeIngredient, Step } from '@/lib/types'
 
