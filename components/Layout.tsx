@@ -30,9 +30,10 @@ const Layout = ({ children, title }: LayoutComponentProps) => {
                 <ul className={styles.navList}>
                     {links.map((link, index) => {
                         const matchLink = new RegExp(`/${link}`);
+                        const linkText = link === 'shoppinglists' ? 'shopping lists' : link;
                         return (
                             <li key={index} className={styles.navListItem}>
-                                <Link className={router.pathname.match(matchLink) ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink} href={`/${link}`}>{capitalize(link)}</Link>
+                                <Link className={router.pathname.match(matchLink) ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink} href={`/${link}`}>{capitalize(linkText, {all: true})}</Link>
                             </li>
                         )
                     })}

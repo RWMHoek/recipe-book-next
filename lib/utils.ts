@@ -1,3 +1,4 @@
+import { CapitalizeOptions } from "./types";
 
 /**
  * Takes a decimal number and returns the fraction of that number as a string.
@@ -91,6 +92,10 @@ export function getTargetValue(target: EventTarget & (HTMLInputElement | HTMLTex
  * // returns:
  * "Hello world"
  */
-export function capitalize(string: string): string {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+export function capitalize(string: string, options?: CapitalizeOptions): string {
+
+    const words = options?.all ? string.split(" ") : [string];
+    const capitalized = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+    
+    return capitalized.join(" ");
 };

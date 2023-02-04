@@ -68,3 +68,7 @@ export interface Action {
     type: string,
     payload?: any
 }
+
+export interface CapitalizeOptions {
+    all?: boolean
+}
