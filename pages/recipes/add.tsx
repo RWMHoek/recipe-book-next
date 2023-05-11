@@ -4,7 +4,7 @@ import { getTargetValue } from '@/lib/utils';
 import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import React, { ChangeEvent, FormEvent, MouseEvent, useReducer } from 'react';
-import { query } from '../api/db';
+import { query } from '../../lib/db';
 import styles from '@/styles/recipes/add.module.css';
 import reducer, { ACTION, initialState } from './recipeReducer';
 
@@ -95,7 +95,7 @@ export default function Add(props: Props) {
     async function handleSubmit(e: FormEvent){
         e.preventDefault();
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}:${process.env.NEXT_PUBLIC_BASE_PORT}/api/recipes`, {
+            const response = await fetch(`${window.location.origin}/api/recipes`, {
                 method: "POST",
                 body: JSON.stringify(recipe),
                 headers: {

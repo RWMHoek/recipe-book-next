@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Layout from '@/components/Layout'
-import { query } from '@/pages/api/db'
+import { query } from '@/lib/db'
 import { GetServerSidePropsContext } from 'next'
 import React, { ChangeEvent, FormEvent, MouseEvent, useEffect, useReducer, useState } from 'react'
 import styles from "@/styles/recipes/edit.module.css";
@@ -98,7 +98,7 @@ export default function EditRecipe(props: Props) {
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}:${process.env.NEXT_PUBLIC_BASE_PORT}/api/recipes`, {
+            const response = await fetch(`${window.location.origin}/api/recipes`, {
                 method: "PUT",
                 body: JSON.stringify(recipe),
                 headers: {
@@ -218,14 +218,14 @@ export default function EditRecipe(props: Props) {
 
 export async function getServerSideProps({params}: GetServerSidePropsContext) {
 
-    let result = await query("SELECT * FROM recipes WHERE id = $1", [params?.id]);
+    let result = await query("SELECT * FROM recipes WHERE id = $1", [params?.id as string]);
     const recipe: Recipe = result.rows[0];
 
-    result = await query("SELECT ingredient_id AS id, amount FROM recipes_ingredients WHERE recipe_id = $1", [params?.id]);
+    result = await query("SELECT ingredient_id AS id, amount FROM recipes_ingredients WHERE recipe_id = $1", [params?.id as string]);
     const recipeIngredients: RecipeIngredient[] = result.rows;
     recipe.ingredients = recipeIngredients.sort((a, b) => a.name! > b.name! ? 1 : a.name === b.name ? 0 : -1);
 
-    result = await query("SELECT * FROM steps WHERE recipe_id = $1", [params?.id]);
+    result = await query("SELECT * FROM steps WHERE recipe_id = $1", [params?.id as string]);
     const steps: Step[] = result.rows;
     steps.sort((a, b) => a.step_number > b.step_number ? 1 : a.step_number === b.step_number ? 0 : -1);
     recipe.steps = steps.map((step) => step.description);

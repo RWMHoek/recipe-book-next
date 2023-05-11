@@ -1,7 +1,7 @@
 import Layout from '@/components/Layout'
 import { GetServerSidePropsContext } from 'next'
 import React, { Key } from 'react'
-import { query } from '../api/db'
+import { query } from '../../lib/db'
 import styles from '@/styles/recipes/index.module.css';
 import Link from 'next/link';
 import { Recipe } from '@/lib/types';

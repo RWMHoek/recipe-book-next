@@ -20,17 +20,21 @@ export function toFraction(decimal: number): string {
     // Separate the numbers before and after the decimal point
     const [ integerPart, fractionPart ] = decimalString.split(".");
 
-    // 
+    // Turn the fraction part into a fraction
     let denominator = 10 ** fractionPart.length;
     let numerator = parseInt(fractionPart)
 
+    // Find the greatest comon divisor
     const divisor = gcd(denominator, numerator);
 
+    // Simplify the fraction
     denominator /= divisor;
     numerator /= divisor;
 
+    // Turn the fraction into a string
     fraction = `${parseInt(integerPart) ? integerPart + " " : ""}${numerator}/${denominator}`;
 
+    // Return the fraction
     return fraction;
 };
 

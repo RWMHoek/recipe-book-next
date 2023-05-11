@@ -2,7 +2,7 @@ import Layout from "@/components/Layout";
 import { ShoppingList } from "@/lib/types";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
-import { query } from "../api/db";
+import { query } from "../../lib/db";
 
 export default function ShoppingLists({ shoppingLists }: {shoppingLists: ShoppingList[]}) {
     return (

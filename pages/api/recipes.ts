@@ -1,5 +1,5 @@
 import nextConnect, { NextConnect } from "next-connect";
-import { query } from "./db";
+import { query } from "../../lib/db";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Recipe, RecipeIngredient } from "@/lib/types";
 

@@ -1,3 +1,5 @@
+import { NextApiRequest } from "next"
+
 export interface Unit {
     id: number,
     name: string,
@@ -16,12 +18,12 @@ export interface Course {
 };
 
 export interface Ingredient {
-    id: number,
+    id?: number,
     name: string,
     unit_id: number,
-    unit: string,
+    unit?: string,
     category_id: number,
-    category: string
+    category?: string
 };
 
 export interface RecipeIngredient {
@@ -71,4 +73,32 @@ export interface Action {
 
 export interface CapitalizeOptions {
     all?: boolean
+}
+
+export interface NextApiRequestWithUser extends NextApiRequest {
+    logIn(user: any, arg1: (err: any) => void): unknown
+    user: {
+        id: number,
+        username: string,
+        email: string
+    }
+}
+
+export interface Client {
+    clientId: string,
+    clientSecret: string,
+    grants: string[]
+}
+
+export interface User {
+    username: string
+}
+
+export interface Token {
+    client: {
+        id: string
+    },
+    user: {
+        username: string
+    }
 }

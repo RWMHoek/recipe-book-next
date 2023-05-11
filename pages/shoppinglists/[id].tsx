@@ -3,7 +3,7 @@ import { RecipeIngredient, ShoppingList, ShoppingListRecipe } from '@/lib/types'
 import { toFraction } from '@/lib/utils';
 import { GetServerSidePropsContext } from 'next';
 import React from 'react';
-import { query } from '../api/db';
+import { query } from '../../lib/db';
 
 interface Props {
     shoppingList: ShoppingList
