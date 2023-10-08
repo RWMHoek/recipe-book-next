@@ -57,17 +57,12 @@ function gcd(a: number, b: number): number {
 
 /**
  * Converts the value of an HTML form element to the desired type.
- * 
- * How to set up the HTML element:
- * 1. Add a 'data-type' attribute to the element
- * 2. Set the value of the attribute to either 'string' or 'number'. The function currently only works for string and number values.
- * 3. Pass a reference to the HTML element to this function and it will return the value of the target element with the desired type.
- * @param target The ChangeEvent target. Can be one of the following: <input>, <textarea>, <select>. The target element must have a 'data-type' attribute set.
- * @returns The value of the target typed as per the data-type attribute.
+ * @param target The ChangeEvent target. Can be one of the following: input (text, number or checkbox), textarea, select.
+ * @returns The value of the target typed as per input type. 
  * 
  * @example 
  * HTML:
- * <input type="number" data-type="number" value={value} onChange={changeHandler} />
+ * <input type="number" value={value} onChange={changeHandler} />
  * 
  * JS:
  * const [ value, setValue ] = useState(0);
@@ -79,11 +74,22 @@ function gcd(a: number, b: number): number {
  */
 export function getTargetValue(target: EventTarget & (HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement)) {
 
-    switch (target.dataset.type) {
-        case 'string':
+    if (target.tagName === 'TEXTAREA') return target.value;
+    if (target.tagName === 'SELECT') {
+        if (target.dataset.type === 'number') {
+            return Number(target.value)
+        } else return target.value;
+    }
+
+    switch (target.type) {
+        case 'text':
             return target.value.toString();
         case 'number':
             return Number(target.value);
+        case 'checkbox':
+            return Boolean((target as EventTarget & HTMLInputElement).checked);
+        default:
+            return target.value;
     }
 };
 
@@ -103,3 +109,22 @@ export function capitalize(string: string, options?: CapitalizeOptions): string 
     
     return capitalized.join(" ");
 };
+
+
+export function getType(variable: any): string {
+
+    switch (typeof variable) {
+        case "string" || "bigint" || "number" || "boolean" || "undefined" || "function":
+            return typeof variable;
+        case "object":
+            if (Array.isArray(variable)) {
+                return "array";
+            } else if (variable === null) {
+                return "null";
+            }
+            return "object";
+        default:
+            return "unknown";
+    }
+
+}

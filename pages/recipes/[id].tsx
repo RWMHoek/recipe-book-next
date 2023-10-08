@@ -7,6 +7,8 @@ import { query } from '../../lib/db'
 import styles from '@/styles/recipes/recipe.module.css'
 import { capitalize, toFraction } from '@/lib/utils'
 import { Recipe, RecipeIngredient, Step } from '@/lib/types'
+import { useSession } from 'next-auth/react'
+import AccessDenied from '@/components/AccessDenied'
 
 interface Props {
     recipe: Recipe
@@ -17,6 +19,21 @@ export default function RecipePage({ recipe }: Props) {
     const router = useRouter();
 
     const [ isDeleted, setIsDeleted ] = useState(false);
+
+    useEffect(() => {
+        if (isDeleted) {
+            router.push("/recipes");
+        }
+    }, [isDeleted])
+
+    const { data: session } = useSession();
+    if (!session) {
+        return (
+            <Layout title="Access Denied">
+                <AccessDenied />
+            </Layout>
+        );
+    }
 
     async function handleDelete(e: MouseEvent) {
         e.preventDefault();
@@ -37,12 +54,6 @@ export default function RecipePage({ recipe }: Props) {
             console.log({error});
         }
     }
-
-    useEffect(() => {
-        if (isDeleted) {
-            router.push("/recipes");
-        }
-    }, [isDeleted])
 
     return (
         <Layout title={`Recipe - ${recipe.name}`}>
@@ -105,14 +116,14 @@ export default function RecipePage({ recipe }: Props) {
 export async function getServerSideProps({ params }: GetServerSidePropsContext) {
     let result;
 
-    result = await query("SELECT recipes.id, recipes.name, recipes.description, courses.name AS course, recipes.serves, recipes.prep_time, recipes.cook_time FROM recipes JOIN courses ON recipes.course_id = courses.id WHERE recipes.id = $1", [params?.id]);
+    result = await query("SELECT recipes.id, recipes.name, recipes.description, courses.name AS course, recipes.serves, recipes.prep_time, recipes.cook_time FROM recipes JOIN courses ON recipes.course_id = courses.id WHERE recipes.id = $1", [params?.id] as string[]);
     const recipe: Recipe = result.rows[0];
 
-    result = await query("SELECT ingredients.name AS name, units.name AS unit, recipes_ingredients.amount AS amount FROM recipes_ingredients JOIN ingredients ON recipes_ingredients.ingredient_id = ingredients.id JOIN units ON ingredients.unit_id = units.id WHERE recipes_ingredients.recipe_id = $1", [params?.id]);
+    result = await query("SELECT ingredients.name AS name, units.name AS unit, recipes_ingredients.amount AS amount FROM recipes_ingredients JOIN ingredients ON recipes_ingredients.ingredient_id = ingredients.id JOIN units ON ingredients.unit_id = units.id WHERE recipes_ingredients.recipe_id = $1", [params?.id] as string[]);
     const ingredients: RecipeIngredient[] = result.rows;
     recipe.ingredients = ingredients.sort((a, b) => a.name! > b.name! ? 1 : a.name === b.name ? 0 : -1);
 
-    result = await query("SELECT id, step_number, description FROM steps WHERE recipe_id = $1", [params?.id]);
+    result = await query("SELECT id, step_number, description FROM steps WHERE recipe_id = $1", [params?.id] as string[]);
     const steps: Step[] = result.rows;
     steps.sort((a, b) => a.step_number > b.step_number ? 1 : a.step_number === b.step_number ? 0 : -1);
     recipe.steps = steps.map(step => step.description);

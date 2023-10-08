@@ -11,6 +11,12 @@ import { useRouter } from "next/router";
 import DeleteForm from "@/components/DeleteForm";
 import IngredientInfo from "@/components/IngredientInfo";
 import { APIError } from "@/lib/errors";
+import { getServerSession } from "next-auth";
+import { useSession } from "next-auth/react";
+import { authOptions } from "../api/auth/[...nextauth]";
+import AccessDenied from "@/components/AccessDenied";
+import Field from "@/components/Field";
+import Form from "@/components/Form";
 
 interface Props {
     ingredients: Ingredient[],
@@ -18,17 +24,25 @@ interface Props {
     categories: Category[]
 }
 
-
-export default function Ingredients({ ingredients, units, categories }: Props) {
-
+export default function Ingredients({ ingredients, units, categories }: Props) {    
+    
     const [ searchTerm, setSearchTerm ] = useState('');
     const [ infoOpen, setInfoOpen ] = useState(false);
     const [ addOpen, setAddOpen ] = useState(false);
     const [ editOpen, setEditOpen ] = useState(false);
     const [ deleteOpen, setDeleteOpen ] = useState(false);
     const [ selectedIngredient, setSelectedIngredient ] = useState<Ingredient | undefined>(undefined);
-
+    
     const router = useRouter();
+    
+    const { data: session } = useSession();
+    if (!session) {
+        return (
+            <Layout title="Access Denied">
+                <AccessDenied />
+            </Layout>
+        );
+    }
 
     const filteredIngredients = ingredients.filter(ingredient => ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()));
     
@@ -180,11 +194,13 @@ export default function Ingredients({ ingredients, units, categories }: Props) {
             <Modal open={infoOpen} setOpen={setInfoOpen}>
                 <IngredientInfo ingredient={selectedIngredient!} />
             </Modal>
-            </Layout>
+        </Layout>
     );
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+
+    const session = await getServerSession(context.req, context.res, authOptions);
 
     let result = await query("SELECT * FROM units");
     const units: Unit[] = result.rows;

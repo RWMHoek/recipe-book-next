@@ -1,10 +1,15 @@
-import Layout from '@/components/Layout';
-import { Course, Ingredient } from '@/lib/types';
-import { getTargetValue } from '@/lib/utils';
+// node modules
+import React, { ChangeEvent, FormEvent, MouseEvent, useReducer } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
-import React, { ChangeEvent, FormEvent, MouseEvent, useReducer } from 'react';
-import { query } from '../../lib/db';
+import { useSession } from 'next-auth/react';
+
+// project modules
+import Layout from '@/components/Layout';
+import AccessDenied from '@/components/AccessDenied';
+import { Course, Ingredient } from '@/lib/types';
+import { getTargetValue } from '@/lib/utils';
+import { query } from '@/lib/db';
 import styles from '@/styles/recipes/add.module.css';
 import reducer, { ACTION, initialState } from './recipeReducer';
 
@@ -18,6 +23,15 @@ export default function Add(props: Props) {
     const router = useRouter();
 
     const [ recipe, dispatch ] = useReducer(reducer, initialState);
+
+    const { data: session } = useSession();
+    if (!session) {
+        return (
+            <Layout title="Access Denied">
+                <AccessDenied />
+            </Layout>
+        );
+    }
 
     function infoChangeHandler({ target }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
         dispatch({

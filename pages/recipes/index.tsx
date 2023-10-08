@@ -5,12 +5,24 @@ import { query } from '../../lib/db'
 import styles from '@/styles/recipes/index.module.css';
 import Link from 'next/link';
 import { Recipe } from '@/lib/types';
+import { useSession } from 'next-auth/react';
+import AccessDenied from '@/components/AccessDenied';
 
 interface Props {
     recipes: Recipe[]
 };
 
 export default function Recipes({ recipes }: Props) {
+
+    const { data: session } = useSession();
+    if (!session) {
+        return (
+            <Layout title="Access Denied">
+                <AccessDenied />
+            </Layout>
+        );
+    }
+    
     return (
         <Layout title='Recipes'>
             <h1 className={styles.heading}>Recipes</h1>

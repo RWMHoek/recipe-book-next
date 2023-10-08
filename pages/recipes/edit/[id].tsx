@@ -8,6 +8,8 @@ import reducer, { ACTION } from '../recipeReducer'
 import { getTargetValue } from '@/lib/utils';
 import { useRouter } from 'next/router'
 import { Course, Ingredient, Recipe, RecipeIngredient, Step } from '@/lib/types';
+import { useSession } from 'next-auth/react';
+import AccessDenied from '@/components/AccessDenied';
 
 interface Props {
     recipe: Recipe,
@@ -16,12 +18,27 @@ interface Props {
 }
 
 export default function EditRecipe(props: Props) {
-
+    
     const router = useRouter();
-
+    
     const [isUpdated, setIsUpdated] = useState(false);
 
     const [recipe, dispatch] = useReducer(reducer, props.recipe);
+    
+    useEffect(() => {
+        if (isUpdated) {
+            router.push(`/recipes/${recipe.id}`);    
+        }
+    }, [isUpdated]);
+    
+    const { data: session } = useSession();
+    if (!session) {
+        return (
+            <Layout title="Access Denied">
+                <AccessDenied />
+            </Layout>
+        );
+    }
 
     function infoChangeHandler({ target }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
         dispatch({
@@ -115,11 +132,6 @@ export default function EditRecipe(props: Props) {
         }
     }
         
-    useEffect(() => {
-        if (isUpdated) {
-            router.push(`/recipes/${recipe.id}`);    
-        }
-    }, [isUpdated]);
   
     return (
         <Layout title="Edit Recipe">
@@ -170,6 +182,7 @@ export default function EditRecipe(props: Props) {
 
                 <fieldset className={styles.ingredients}>
                     <h2 className={styles.heading2}>Ingredients</h2>
+                    
                     <ul>
                         {recipe.ingredients.map((recipeIngredient, index) => {
                             return (
@@ -233,7 +246,7 @@ export async function getServerSideProps({params}: GetServerSidePropsContext) {
     result = await query("SELECT * FROM courses");
     const courses: Course[] = result.rows;
 
-    result = await query("SELECT ingredients.id, ingredients.name, units.name AS unit FROM ingredients JOIN units ON ingredients.unit_id = units.id");
+    result = await query("SELECT ingredients.id, ingredients.name, units.name AS unit FROM ingredients JOIN units ON ingredients.unit_id = units.id ORDER BY ingredients.name ASC");
     const ingredients: Ingredient[] = result.rows;
 
     return {
